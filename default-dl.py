@@ -18,7 +18,6 @@ if len(sys.argv) <= 1:
 vid_urls = sys.argv[1:]
 
 reg = re.compile(r"https:\/\/www\.youtube\.com\/watch\?v=([A-Za-z0-9\-]+).*")
-
 vid_ids = [reg.match(vid_url).groups()[0] for vid_url in vid_urls]
 
 dirpath = "./Downloads"
@@ -36,13 +35,22 @@ class MyLogger(object):
     def error(self, msg):
         print(msg)
 
+start_dl = True
+dl_format = ""
 def my_hook(d):
+    global start_dl, dl_format
     if d['status'] == 'downloading':
+        if not start_dl:
+            sys.stdout.write("\033[F")
+        else:
+            print(f"Begin {dl_format} Download...")
+        start_dl = False
         print(d['filename'], d['_percent_str'], d['_eta_str'])
-    # if d['status'] == 'finished':
-    #     print('Done downloading, now converting ...')
+    if d['status'] == 'finished':
+        print(f"Processing {dl_format}...")
+        start_dl = True
 
-print("Downloading audio")
+dl_format = "Audio"
 ydl_opts = {
     'format': 'bestaudio/best',
     'postprocessors': [{
@@ -57,7 +65,7 @@ ydl_opts = {
 with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     ydl.download(vid_urls)
 
-print("Downloading video")
+dl_format = "Video"
 ydl_opts = {
     'format': 'bestvideo/best',
     'outtmpl': './Downloads/temp-%(id)s.%(ext)s',
@@ -68,7 +76,7 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     ydl.download(vid_urls)
 
 for vid_id in vid_ids:
-    print("getting first frame")
+    # print("getting first frame")
     vidcap = cv2.VideoCapture(f'{dirpath}/temp-{vid_id}.webm')
     success,image = vidcap.read()
     cv2.imwrite("frame.png", image)   

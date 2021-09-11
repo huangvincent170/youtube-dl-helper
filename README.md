@@ -16,8 +16,11 @@ Example of original:
 High Quality:  
 ![img](assets/example_hq_embed_thumbnail.png)
 
-Requirements:
-youtube-dl
-ffmpeg
-eyed3
-cv2
+Usage:  
+TODO
+  
+Requirements:  
+youtube-dl  
+ffmpeg v4.x  
+eyed3  
+<!-- cv2   -->
